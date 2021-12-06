@@ -1,3 +1,6 @@
+ARG WILDFLY_VERSION=25.0.0.Final
+
+
 FROM alpine:3.15 as builder
 
 ARG EIDAS_NODE_VERSION=2.5.0
@@ -20,7 +23,7 @@ RUN unzip eIDAS-node-${EIDAS_NODE_VERSION}.zip && \
 RUN unzip -d /data/WILDFLY/config /data/WILDFLY/config.zip
 
 
-FROM jboss/wildfly:25.0.0.Final as runner
+FROM jboss/wildfly:${WILDFLY_VERSION} as runner
 
 ARG JDK_DIR=/usr/lib/jvm/java-11-openjdk-11.0.8.10-0.el7_8.x86_64
 

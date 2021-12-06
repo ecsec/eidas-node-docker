@@ -21,7 +21,9 @@ if [ -f ./$DOCKER_DIR/.env ]; then
 fi
 
 
-docker build -t $REG_NAME/$PREFIX/$NAME $DOCKER_DIR || exit 1
+docker build --build-arg EIDAS_NODE_VERSION=${EIDAS_NODE_VERSION} \
+             --build-arg WILDFLY_VERSION=${WILDFLY_VERSION} \
+             -t $REG_NAME/$PREFIX/$NAME $DOCKER_DIR || exit 1
 
 if [ $1 ]; then
     echo "Publishing version=$1 ..."
