@@ -1,0 +1,103 @@
+
+replicaCount: 1
+
+image:
+  # -- Repository from where the eIDAS-Node Image will be downloaded
+  repository: public.docker.ecsec.de/ecsec/eidas/eidas-node
+  # -- Pull Policy of the eIDAS-Node Image
+  pullPolicy: Always
+  # -- Overrides the image tag whose default is the chart appVersion.
+  tag: ""
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  # -- Specifies whether a service account should be created
+  create: true
+  # -- Annotations to add to the service account
+  annotations: {}
+  # -- The name of the service account to use. If not set and create is true, a name is generated using the fullname template.
+  name: ""
+
+# -- Additional Pod Annotations for the eIDAS-Node Deployment.
+podAnnotations: {}
+
+# -- Pod Security Context for the eIDAS-Node Deployment.
+podSecurityContext: {}
+  # fsGroup: 2000
+
+# -- Security Context for the eIDAS-Node Deployment.
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+service:
+  # -- Service Type that will be used.
+  type: ClusterIP
+  # -- Service Port.
+  port: 80
+
+ingress:
+  # -- Indicates whether ingress is enabled or not.
+  enabled: false
+  className: ""
+  # -- Additional Ingress annotations.
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  # -- Host-Specific Configuration.
+  hosts:
+    - host: eidas-node.local
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+  # -- TLS-Specific Configuration.
+  tls: []
+  #  - secretName: eidas-node-tls
+  #    hosts:
+  #      - eidas-node.local
+
+# -- Defining resource limits for the eIDAS-Node Deployment.
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+# -- Defining liveness/readiness probes for the eIDAS-Node Deployment.
+probes: {}
+  # Enabling liveness/readiness probes for the eIDAS-Node Deployment. If you do want to specifiy probes,
+  # uncomment the following lines,  adjust them as necessary, and remove the curly braces after 'probes:'.
+  # livenessProbe:
+  #   httpGet:
+  #     path: /eidas-node
+  #     port: http
+  #   initialDelaySeconds: 10
+  #   periodSeconds: 3
+  # readinessProbe:
+  #   httpGet:
+  #     path: /eidas-node
+  #     port: http
+  #   initialDelaySeconds: 10
+  #   periodSeconds: 3
+
+# -- Node-Selector Specific Configuration.
+nodeSelector: {}
+
+# -- Tolerations
+tolerations: []
+
+# -- Affinity-Configuration for the eIDAS-Node Deployment.
+affinity: {}
