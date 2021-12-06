@@ -28,7 +28,7 @@ docker build --build-arg EIDAS_NODE_VERSION=${EIDAS_NODE_VERSION} \
 if [ $1 ]; then
     echo "Publishing version=$1 ..."
     if [ ! $NO_GIT_TAG ]; then
-        git tag v$1 || exit 1
+        git tag -s v$1 || exit 1
         git push origin v$1 || exit 1
     fi
 
