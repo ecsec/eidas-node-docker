@@ -1,20 +1,20 @@
-ARG WILDFLY_VERSION=25.0.0.Final
 ARG ALPINE_VERSION=3.15
+ARG WILDFLY_VERSION=25.0.0.Final
 
 
 FROM alpine:${ALPINE_VERSION} as builder
 
-ARG EIDAS_NODE_VERSION=2.5.0
 
 RUN apk update && \
-    apk add --no-cache unzip && \
-    apk add --no-cache wget && \
-    apk add --no-cache openjdk11
+    apk add --no-cache unzip curl openjdk17
 
 WORKDIR /data
 
+ARG EIDAS_NODE_VERSION=2.5.0
+ARG EIDAS_NODE_URL=https://ec.europa.eu/cefdigital/artifact/repository/eid/eu/eIDAS-node/${EIDAS_NODE_VERSION}/eIDAS-node-${EIDAS_NODE_VERSION}.zip
+
 # Download eIDAS-Node Software
-RUN wget https://ec.europa.eu/cefdigital/artifact/repository/eid/eu/eIDAS-node/${EIDAS_NODE_VERSION}/eIDAS-node-${EIDAS_NODE_VERSION}.zip
+RUN curl ${EIDAS_NODE_URL} -o eIDAS-node-dl.zip
 
 # Prepare for adding updated jboss-deployment-structure.xml file to EidasNode.war
 # Because of Bug: https://issues.apache.org/jira/browse/IGNITE-12483
@@ -22,8 +22,8 @@ RUN wget https://ec.europa.eu/cefdigital/artifact/repository/eid/eu/eIDAS-node/$
 COPY docker/jboss-deployment-structure.xml WEB-INF/jboss-deployment-structure.xml
 
 # Unzip eIDAS-Node Software
-RUN unzip eIDAS-node-${EIDAS_NODE_VERSION}.zip && \
-    unzip EIDAS-Binaries-Wildfly-${EIDAS_NODE_VERSION}.zip && \
+RUN unzip eIDAS-node-dl.zip && \
+    unzip EIDAS-Binaries-Wildfly-*.zip && \
     # Update the EidasNode.war by adding and overwriting jboss-deployment-structure.xml
     jar -uvf WILDFLY/EidasNode.war WEB-INF/
 
