@@ -37,9 +37,11 @@ COPY --from=builder --chown=jboss:root /data/WILDFLY/EidasNode.war /opt/jboss/wi
 # Copy BouncyCastle to Wildfly Modules
 COPY --from=builder --chown=jboss:root /data/AdditionalFiles/Wildfly15/ /opt/jboss/wildfly/modules/system/layers/base/
 
-RUN mkdir -p /eidas/keystores && \
-    mkdir -p /eidas/specificProxyService && \
-    chown -R jboss:root /eidas && \
+RUN mkdir -p /config/eidas/specificProxyService && \
+    mkdir -p /config/keystore && \
+    mkdir -p /work && \
+    chown -R jboss:root /config && \
+    chown -R jboss:root /work && \
     # Add BouncyCastle Security Provider
     sed -i 's/security.provider.12=SunPKCS11/security.provider.12=SunPKCS11\nsecurity.provider.13=org.bouncycastle.jce.provider.BouncyCastleProvider/g' /usr/lib/jvm/java/conf/security/java.security && \
     # See also https://apacheignite.readme.io/docs/getting-started#running-ignite-with-java-11-and-later-versions regarding add-exports
@@ -48,9 +50,9 @@ RUN mkdir -p /eidas/keystores && \
 
 USER jboss
 
-ENV EIDAS_CONFIG_REPOSITORY=/eidas
-ENV SPECIFIC_CONNECTOR_CONFIG_REPOSITORY=/eidas
-ENV SPECIFIC_PROXY_SERVICE_CONFIG_REPOSITORY=/eidas/specificProxyService
+ENV EIDAS_CONFIG_REPOSITORY=/config/eidas
+ENV SPECIFIC_CONNECTOR_CONFIG_REPOSITORY=/config/eidas
+ENV SPECIFIC_PROXY_SERVICE_CONFIG_REPOSITORY=/config/eidas/specificProxyService
 
 ENV JAVA_OPTS=""
 ENV JAVA_OPTS_CUSTOM="-Xmx512m"
