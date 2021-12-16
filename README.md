@@ -16,6 +16,39 @@ $ docker build -t ${REPOSITORY}/${IMAGE_NAME}:${TAG} .
 $ docker push ${REPOSITORY}/${IMAGE_NAME}:${TAG}
 ```
 
+## Quick Start
+
+You can run the eIDAS-Node in a container by first building the Image and preparing the configuration in a directory (`config/`). A configuration must be present, otherwise you might receive startup errors.
+
+For an initial start you can use the default config that is provided in the eIDAS-Node archive (which can be downloaded from [here](https://ec.europa.eu/cefdigital/wiki/display/CEFDIGITAL/eIDAS-Node+version+2.5)). You have to extract all the content in the archive and in `EIDAS-Binaries-Wildfly-2.5.0/WILDFLY/config/` you find an example of an eIDAS-Node deployment config (`wildfly/`) and corresponding keystores (`keystore/`).
+
+Run the following command to start the eIDAS-Node with those example settings:
+
+```bash
+$ # Absolute path to your eIDAS-Node Configuration (like /home/<USER>/eIDAS-node-2.5.0/EIDAS-Binaries-Wildfly-2.5.0/WILDFLY/config/)
+$ PATH_TO_CONFIG=<ABSOLUTE_PATH_TO_CONFIG>
+$ docker run \
+    -p 8080:8080 \
+    --mount type=bind,source=${PATH_TO_CONFIG}/wildfly,target=/config/eidas \
+    --mount type=bind,source=${PATH_TO_CONFIG}/keystore,target=/config/keystore \
+    ${REPOSITORY}/${IMAGE_NAME}:${TAG} 
+```
+
+If you want to customize the WildFly configuration (like Reverse Proxy settings), you can overwrite the WildFly default configuration by creating a new WildFly configuration and mount this config to the container:
+
+```bash
+$ # Absolute path to your eIDAS-Node Configuration (like /home/<USER>/eIDAS-node-2.5.0/EIDAS-Binaries-Wildfly-2.5.0/WILDFLY/config/)
+$ PATH_TO_CONFIG=<ABSOLUTE_PATH_TO_CONFIG>
+$ touch ${PATH_TO_CONFIG}/standalone.xml
+$ # Adjust the WildFly settings in config/standalone.xml
+$ docker run \
+    -p 8080:8080 \
+    --mount type=bind,source=${PATH_TO_CONFIG}/wildfly,target=/config/eidas \
+    --mount type=bind,source=${PATH_TO_CONFIG}/keystore,target=/config/keystore \
+    --mount type=bind,source=${PATH_TO_CONFIG}/standalone.xml,target=/opt/jboss/wildfly/standalone/configuration/standalone.xml \
+    ${REPOSITORY}/${IMAGE_NAME}:${TAG}
+```
+
 ## Deployment via Helm Chart
 
 ```bash

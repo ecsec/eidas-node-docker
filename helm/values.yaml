@@ -24,6 +24,7 @@ configurationViaDownload:
   downloadUrl: https://mvn.ecsec.de/repository/openecard-public/de/ecsec/eidas/eidas-node-config/1.0.0/eidas-node-config-1.0.0-bundle.zip
 
 # -- You can provide custom volumes (like for config files, keystores, ...).
+# -- You can also overwrite the default wildfly configuration.
 # -- If you do want to specify volumes, uncomment the following
 # -- lines, adjust them as necessary, and remove the brackets after 'volumes:'.
 volumes: []
@@ -33,6 +34,9 @@ volumes: []
   # - name: config-volume
   #   persistentVolumeClaim:
   #     claimName: eidas-node-config-claim
+  # - name: wildfly-config-volume
+  #   configMap:
+  #     name: wildfly-config
 
 # -- Here you can define where the volumes above will be mounted to.
 # -- Config Files of the eIDAS-Node should be mounted to "/config/eidas" and keystores should be mounted 
@@ -44,6 +48,9 @@ volumeMounts: []
   #   mountPath: /config/keystore
   # - name: config-volume
   #   mountPath: /config/eidas
+  # - name: wildfly-config-volume
+  #   mountPath: /opt/jboss/wildfly/standalone/configuration/standalone.xml
+  #   subPath: standalone.xml
 
 # -- Here you can overwrite env variables in the eIDAS-Node Deployment.
 envs:
