@@ -56,3 +56,15 @@ $ helm upgrade --install ${RELEASE_NAME} -n ${NAMESPACE} helm/
 ```
 
 For more details about the helm chart and its configuration, see [here](./helm/README.md).
+
+
+# License
+
+The sources in this repository are made available under the Apache License Version 2.0.
+Find a copy of the license terms in the [LICENSE](./LICENSE) file.
+
+The built docker container contains further software that may use different licenses.
+Consider inspecting the following projects to obtain a complete list of licenses.
+- Alpine Linux (https://www.alpinelinux.org/)
+- WildFly Docker Image (https://github.com/jboss-dockerfiles/wildfly)
+- eIDAS-Node Integration Package (https://ec.europa.eu/cefdigital/wiki/display/CEFDIGITAL/eIDAS-Node+Integration+Package)
