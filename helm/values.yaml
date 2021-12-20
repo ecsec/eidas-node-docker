@@ -3,7 +3,7 @@ replicaCount: 1
 
 image:
   # -- Repository from where the eIDAS-Node Image will be downloaded
-  repository: public.docker.ecsec.de/ecsec/eidas/eidas-node
+  repository: ecsec/eidas-node
   # -- Pull Policy of the eIDAS-Node Image
   pullPolicy: Always
   # -- Overrides the image tag whose default is the chart appVersion.
@@ -13,20 +13,13 @@ imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
 
-# -- eIDAS-Node Configuration (You can provide your config files and keystores also via volumes, see below).
-configurationViaDownload:
-  # -- Indicates if a custom eIDAS-Node Configuration will be provided via download (see config parameters below).
-  # -- Use this option only if you're not mounting your config files and keystores via volumes!
-  enabled: false
-  # -- Here you can provide a download URL for you eIDAS-Node Configuration (must be a ZIP-File).
-  # -- The ZIP-Files must contain a directory 'keystore' and 'config'.
-  # -- A default config can be retrieved from the following URL.
-  downloadUrl: https://mvn.ecsec.de/repository/openecard-public/de/ecsec/eidas/eidas-node-config/1.0.0/eidas-node-config-1.0.0-bundle.zip
+# -- You can provide some customized init containers here.
+initContainers: []
 
 # -- You can provide custom volumes (like for config files, keystores, ...).
-# -- You can also overwrite the default wildfly configuration.
-# -- If you do want to specify volumes, uncomment the following
-# -- lines, adjust them as necessary, and remove the brackets after 'volumes:'.
+# You can also overwrite the default wildfly configuration.
+# If you do want to specify volumes, uncomment the following
+# lines, adjust them as necessary, and remove the brackets after 'volumes:'.
 volumes: []
   # - name: keystore-volume
   #   persistentVolumeClaim:
@@ -39,10 +32,10 @@ volumes: []
   #     name: wildfly-config
 
 # -- Here you can define where the volumes above will be mounted to.
-# -- Config Files of the eIDAS-Node should be mounted to "/config/eidas" and keystores should be mounted 
-# -- to "/config/keystore" (default). You can overwrite this default behavior by using the env variables mentioned below.
-# -- If you do want to specify volumeMounts, uncomment the following
-# -- lines, adjust them as necessary, and remove the brackets after 'volumeMounts:'.
+# Config Files of the eIDAS-Node should be mounted to "/config/eidas" and keystores should be mounted 
+# to "/config/keystore" (default). You can overwrite this default behavior by using the env variables mentioned below.
+# If you do want to specify volumeMounts, uncomment the following
+# lines, adjust them as necessary, and remove the brackets after 'volumeMounts:'.
 volumeMounts: []
   # - name: keystore-volume
   #   mountPath: /config/keystore

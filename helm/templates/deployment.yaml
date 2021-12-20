@@ -25,32 +25,10 @@ spec:
       serviceAccountName: {{ include "eidas-node.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
-      {{- if and .Values.configurationViaDownload.enabled .Values.configurationViaDownload.downloadUrl }}
-      volumes:
-        - name: keystore-volume
-          emptyDir: {}
-        - name: config-volume
-          emptyDir: {}
-        {{- if .Values.volumes }}
-          {{- toYaml .Values.volumes | nindent 8 }}
-        {{- end }}
       initContainers:
-        - name: download-config
-          image: alpine:3.14.0
-          imagePullPolicy: Always
-          command:
-          - "/bin/ash"
-          - "-c"
-          - "wget -O /data/config.zip {{ .Values.configurationViaDownload.downloadUrl }} && unzip -o /data/config.zip -d /data && rm /data/config.zip"
-          volumeMounts:
-          - name: keystore-volume
-            mountPath: "/data/keystore"
-          - name: config-volume
-            mountPath: "/data/config"
-      {{- else }}
+        {{- toYaml .Values.initContainers | nindent 8 }}
       volumes:
         {{- toYaml .Values.volumes | nindent 8 }}
-      {{- end }}
       containers:
         - name: eidas-node
           securityContext:
@@ -68,19 +46,8 @@ spec:
           {{- if .Values.probes }}
             {{- toYaml .Values.probes | nindent 10 }}
           {{- end }}
-          {{- if and .Values.configurationViaDownload.enabled .Values.configurationViaDownload.downloadUrl }}
-          volumeMounts:
-            - name: keystore-volume
-              mountPath: /config/keystore
-            - name: config-volume
-              mountPath: /config/eidas
-            {{- if .Values.volumeMounts }}
-              {{- toYaml .Values.volumeMounts | nindent 12 }}
-            {{- end }}
-          {{- else }}
           volumeMounts:
             {{- toYaml .Values.volumeMounts | nindent 12 }}
-          {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       {{- with .Values.nodeSelector }}

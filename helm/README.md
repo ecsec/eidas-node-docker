@@ -1,6 +1,6 @@
 # eidas-node
 
-![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.5.0-wildfly-25.0.0.Final](https://img.shields.io/badge/AppVersion-2.5.0--wildfly--25.0.0.Final-informational?style=flat-square)
+![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: latest](https://img.shields.io/badge/AppVersion-latest-informational?style=flat-square)
 
 A Helm chart for Kubernetes
 
@@ -9,13 +9,10 @@ A Helm chart for Kubernetes
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | affinity | object | `{}` | Affinity-Configuration for the eIDAS-Node Deployment. |
-| configurationViaDownload | object | `{"downloadUrl":"https://mvn.ecsec.de/repository/openecard-public/de/ecsec/eidas/eidas-node-config/1.0.0/eidas-node-config-1.0.0-bundle.zip","enabled":false}` | eIDAS-Node Configuration (You can provide your config files and keystores also via volumes, see below). |
-| configurationViaDownload.downloadUrl | string | `"https://mvn.ecsec.de/repository/openecard-public/de/ecsec/eidas/eidas-node-config/1.0.0/eidas-node-config-1.0.0-bundle.zip"` | Here you can provide a download URL for you eIDAS-Node Configuration (must be a ZIP-File). -- The ZIP-Files must contain a directory 'keystore' and 'config'. -- A default config can be retrieved from the following URL. |
-| configurationViaDownload.enabled | bool | `false` | Indicates if a custom eIDAS-Node Configuration will be provided via download (see config parameters below). -- Use this option only if you're not mounting your config files and keystores via volumes! |
 | envs | string | `nil` | Here you can overwrite env variables in the eIDAS-Node Deployment. |
 | fullnameOverride | string | `""` |  |
 | image.pullPolicy | string | `"Always"` | Pull Policy of the eIDAS-Node Image |
-| image.repository | string | `"public.docker.ecsec.de/ecsec/eidas/eidas-node"` | Repository from where the eIDAS-Node Image will be downloaded |
+| image.repository | string | `"ecsec/eidas-node"` | Repository from where the eIDAS-Node Image will be downloaded |
 | image.tag | string | `""` | Overrides the image tag whose default is the chart appVersion. |
 | imagePullSecrets | list | `[]` |  |
 | ingress.annotations | object | `{}` | Additional Ingress annotations. |
@@ -25,6 +22,7 @@ A Helm chart for Kubernetes
 | ingress.hosts[0].paths[0].path | string | `"/"` |  |
 | ingress.hosts[0].paths[0].pathType | string | `"ImplementationSpecific"` |  |
 | ingress.tls | list | `[]` | TLS-Specific Configuration. |
+| initContainers | list | `[]` | You can provide some customized init containers here. |
 | nameOverride | string | `""` |  |
 | nodeSelector | object | `{}` | Node-Selector Specific Configuration. |
 | podAnnotations | object | `{}` | Additional Pod Annotations for the eIDAS-Node Deployment. |
@@ -39,8 +37,8 @@ A Helm chart for Kubernetes
 | serviceAccount.create | bool | `true` | Specifies whether a service account should be created |
 | serviceAccount.name | string | `""` | The name of the service account to use. If not set and create is true, a name is generated using the fullname template. |
 | tolerations | list | `[]` | Tolerations |
-| volumeMounts | list | `[]` | Here you can define where the volumes above will be mounted to. -- Config Files of the eIDAS-Node should be mounted to "/config/eidas" and keystores should be mounted  -- to "/config/keystore" (default). You can overwrite this default behavior by using the env variables mentioned below. -- If you do want to specify volumeMounts, uncomment the following -- lines, adjust them as necessary, and remove the brackets after 'volumeMounts:'. |
-| volumes | list | `[]` | You can provide custom volumes (like for config files, keystores, ...). -- You can also overwrite the default wildfly configuration. -- If you do want to specify volumes, uncomment the following -- lines, adjust them as necessary, and remove the brackets after 'volumes:'. |
+| volumeMounts | list | `[]` | Here you can define where the volumes above will be mounted to. Config Files of the eIDAS-Node should be mounted to "/config/eidas" and keystores should be mounted  to "/config/keystore" (default). You can overwrite this default behavior by using the env variables mentioned below. If you do want to specify volumeMounts, uncomment the following lines, adjust them as necessary, and remove the brackets after 'volumeMounts:'. |
+| volumes | list | `[]` | You can provide custom volumes (like for config files, keystores, ...). You can also overwrite the default wildfly configuration. If you do want to specify volumes, uncomment the following lines, adjust them as necessary, and remove the brackets after 'volumes:'. |
 
 ----------------------------------------------
 Autogenerated from chart metadata using [helm-docs v1.5.0](https://github.com/norwoodj/helm-docs/releases/v1.5.0)
