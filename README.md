@@ -1,52 +1,56 @@
 # eIDAS-Node Docker Image
 
-## Build & Push Docker Image
+This repository provides a Dockerfile and Helm Chart of the EU eIDAS-Node Software. The eIDAS-Node Docker Image is published via [Docker Hub](https://hub.docker.com/r/ecsec/eidas-node).
 
-The eIDAS-Node and WildFly version are defined in ARGs in the Dockerfile.
-The eIDAS-Node download is controlled by either setting the version in `EIDAS_NODE_VERSION`, or by defining the entire URL pointing to the zip file in `EIDAS_NODE_URL`.
-The WildFly version can be changed with the `WILDFLY_VERSION` argument.
+## Build
 
-By executing the following commands the eIDAS-Node Image can be built and published.
+By executing the following command the eIDAS-Node Image can be built.
 
 ```bash
-$ REPOSITORY=<YOUR_REPO>
-$ IMAGE_NAME=<IMAGE_NAME>
-$ TAG=<DESIRED_TAG>
-$ docker build -t ${REPOSITORY}/${IMAGE_NAME}:${TAG} .
-$ docker push ${REPOSITORY}/${IMAGE_NAME}:${TAG}
+$ docker build -t ecsec/eidas-node .
 ```
 
-## Quick Start
+The following build arguments are supported (and can be used with `--build-arg`):
 
-You can run the eIDAS-Node in a container by first building the Image and preparing the configuration in a directory (`config/`). A configuration must be present, otherwise you might receive startup errors.
+| Build Argument | Description | Default |
+| -------------- | ----------- | ------- |
+| ALPINE_VERSION | Version of the Alpine Image that is used for downloading, extracting and preparing the eIDAS-Node software. | 3.15 |
+| EIDAS_NODE_VERSION | Version of the eIDAS-Node software that will be used in the resulting image. | 2.5.0 |
+| WILDFLY_VERSION | Version of the WildFly Application Server that will be used in the resulting image. | 25.0.0.Final |
+| EIDAS_NODE_URL | Defines the entire URL that is pointing to the ZIP-Archive of the eIDAS-Node Software. | `https://ec.europa.eu/cefdigital/artifact/repository/eid/eu/eIDAS-node/${EIDAS_NODE_VERSION}/eIDAS-node-${EIDAS_NODE_VERSION}.zip` |
 
-For an initial start you can use the default config that is provided in the eIDAS-Node archive (which can be downloaded from [here](https://ec.europa.eu/cefdigital/wiki/display/CEFDIGITAL/eIDAS-Node+version+2.5)). You have to extract all the content in the archive and in `EIDAS-Binaries-Wildfly-2.5.0/WILDFLY/config/` you find an example of an eIDAS-Node deployment config (`wildfly/`) and corresponding keystores (`keystore/`).
+## Configuration
 
-Run the following command to start the eIDAS-Node with those example settings:
+Before you can run the eIDAS-Node via Docker, you have to prepare your eIDAS-Node configuration. A configuration must be present, otherwise you might receive startup errors.
+
+For an initial start you can use the default settings that are provided in the eIDAS-Node release archive (which can be downloaded from [here](https://ec.europa.eu/cefdigital/wiki/display/CEFDIGITAL/All+releases). You have to extract the content in the archive and there should be the config directories `wildfly` and `keystore`. Those directories provide some default settings for the eIDAS-Node software.
+
+Those settings must be mounted to the Docker Container. The most essential mount paths are the following:
+
+| Mount Path | Description |
+| ---------- | ----------- |
+| /config/eidas | This is the default directory where your eIDAS-Node configuration files are stored (Can be overwritten via an env variable). |
+| /config/keystore | This is the default directory where your keystores are stored. |
+| /opt/jboss/wildfly/standalone/configuration/standalone.xml | Your WildFly configuration which can be overwritten by a customized one. |
+
+In addition, the following environment variables can be overwritten at runtime (by using `--env`):
+
+| Environment Variable | Description | Default |
+| -------------------- | ----------- | ------- |
+| EIDAS_CONFIG_REPOSITORY | The directory where your eIDAS-Node configuration files are stored. | /config/eidas |
+| SPECIFIC_CONNECTOR_CONFIG_REPOSITORY | The directory where your specific connector configuration files are stored. | /config/eidas |
+| SPECIFIC_PROXY_SERVICE_CONFIG_REPOSITORY | The directory where your specific proxy service configuration files are stored. | /config/eidas/specificProxyService |
+| JAVA_OPTS_CUSTOM | Can be used to overwrite JVM arguments. | `-Xmx512m` |
+
+
+Starting the eIDAS-Node Docker container with some default settings can look like this:
 
 ```bash
-$ # Absolute path to your eIDAS-Node Configuration (like /home/<USER>/eIDAS-node-2.5.0/EIDAS-Binaries-Wildfly-2.5.0/WILDFLY/config/)
-$ PATH_TO_CONFIG=<ABSOLUTE_PATH_TO_CONFIG>
 $ docker run \
     -p 8080:8080 \
-    --mount type=bind,source=${PATH_TO_CONFIG}/wildfly,target=/config/eidas \
-    --mount type=bind,source=${PATH_TO_CONFIG}/keystore,target=/config/keystore \
-    ${REPOSITORY}/${IMAGE_NAME}:${TAG} 
-```
-
-If you want to customize the WildFly configuration (like Reverse Proxy settings), you can overwrite the WildFly default configuration by creating a new WildFly configuration and mount this config to the container:
-
-```bash
-$ # Absolute path to your eIDAS-Node Configuration (like /home/<USER>/eIDAS-node-2.5.0/EIDAS-Binaries-Wildfly-2.5.0/WILDFLY/config/)
-$ PATH_TO_CONFIG=<ABSOLUTE_PATH_TO_CONFIG>
-$ touch ${PATH_TO_CONFIG}/standalone.xml
-$ # Adjust the WildFly settings in config/standalone.xml
-$ docker run \
-    -p 8080:8080 \
-    --mount type=bind,source=${PATH_TO_CONFIG}/wildfly,target=/config/eidas \
-    --mount type=bind,source=${PATH_TO_CONFIG}/keystore,target=/config/keystore \
-    --mount type=bind,source=${PATH_TO_CONFIG}/standalone.xml,target=/opt/jboss/wildfly/standalone/configuration/standalone.xml \
-    ${REPOSITORY}/${IMAGE_NAME}:${TAG}
+    --mount type=bind,source=<PATH_TO_EIDAS_NODE_CONFIG_FOLDER>/wildfly,target=/config/eidas \
+    --mount type=bind,source=<PATH_TO_EIDAS_NODE_CONFIG_FOLDER>/keystore,target=/config/keystore \
+    ecsec/eidas-node
 ```
 
 ## Deployment via Helm Chart
