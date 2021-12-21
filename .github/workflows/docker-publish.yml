@@ -44,7 +44,9 @@ jobs:
         uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
         with:
           context: .
-          tags: ${{ env.IMAGE_NAME }}:${{ steps.determine-tag.outputs.TAG }}
+          tags: |
+            ${{ env.IMAGE_NAME }}:${{ steps.determine-tag.outputs.TAG }}
+            ${{ env.IMAGE_NAME }}:latest
           # build on feature branches, push only on main branch
           push: true
 
