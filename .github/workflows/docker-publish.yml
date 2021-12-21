@@ -54,14 +54,33 @@ jobs:
     permissions:
       contents: read
       packages: write
+    env:
+      HELM_REPO: https://mvn.ecsec.de/repository/helm-public/
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
 
+      # Install Helm
+      # https://github.com/Azure/setup-helm
       - name: Install Helm
         uses: azure/setup-helm@v1
         id: install
 
-      - name: Test Helm Chart Version
-        run: helm version
+      # Package Helm Chart
+      - name: Package Helm chart
+        id: package-helm
+        run: |
+          GITHUB_TAG=$(echo $GITHUB_REF | cut -d / -f 3 | cut -c 2-)
+          sed -i 's@appVersion: "latest"@appVersion: "'"$GITHUB_TAG"'"@' helm/Chart.yaml
+          echo ::set-output name=TAG::$(echo $GITHUB_TAG)
+
+          helm package helm/
+
+      # Push Helm Chart
+      # https://github.com/wei/curl
+      - name: Push Helm chart
+        uses: wei/curl@v1
+        id: push-helm
+        with:
+          args: -u ${{ secrets.NXS_HELM_USER }}:${{ secrets.NXS_HELM_PASS }} ${{ env.HELM_REPO }} --upload-file "eidas-node-${{ steps.package-helm.outputs.TAG }}.tgz" -v
