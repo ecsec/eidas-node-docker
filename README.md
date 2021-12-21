@@ -38,7 +38,7 @@ In addition, the following environment variables can be overwritten at runtime (
 | Environment Variable | Description | Default |
 | -------------------- | ----------- | ------- |
 | EIDAS_CONFIG_REPOSITORY | The directory where your eIDAS-Node configuration files are stored. | /config/eidas |
-| SPECIFIC_CONNECTOR_CONFIG_REPOSITORY | The directory where your specific connector configuration files are stored. | /config/eidas |
+| SPECIFIC_CONNECTOR_CONFIG_REPOSITORY | The directory where your specific connector configuration files are stored. | /config/eidas/specificConnector |
 | SPECIFIC_PROXY_SERVICE_CONFIG_REPOSITORY | The directory where your specific proxy service configuration files are stored. | /config/eidas/specificProxyService |
 | JAVA_OPTS_CUSTOM | Can be used to overwrite JVM arguments. | `-Xmx512m` |
 
