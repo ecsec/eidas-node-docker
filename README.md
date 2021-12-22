@@ -56,7 +56,15 @@ $ docker run \
 ## Deployment via Helm Chart
 
 ```bash
-$ helm upgrade --install ${RELEASE_NAME} -n ${NAMESPACE} helm/
+$ helm repo add ecsec https://mvn.ecsec.de/repository/helm-public/
+$ helm repo update
+$ helm upgrade --install ${RELEASE_NAME} -n ${NAMESPACE} --version ${VERSION} ecsec/eidas-node
+```
+
+You can list all available eIDAS-Node helm charts by using the following command:
+
+```bash
+$ helm search repo eidas-node --devel
 ```
 
 For more details about the helm chart and its configuration, see [here](./helm/README.md).
