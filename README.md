@@ -1,5 +1,8 @@
 # eIDAS-Node Docker Image
 
+[![Docker](https://github.com/ecsec/eidas-node-docker/actions/workflows/docker-publish.yml/badge.svg)](https://github.com/ecsec/eidas-node-docker/actions/workflows/docker-publish.yml)
+![Docker Image Version (latest by date)](https://img.shields.io/docker/v/ecsec/eidas-node)
+
 This repository provides a Dockerfile and Helm Chart of the EU eIDAS-Node Software. The eIDAS-Node Docker Image is published via [Docker Hub](https://hub.docker.com/r/ecsec/eidas-node).
 
 ## Build
