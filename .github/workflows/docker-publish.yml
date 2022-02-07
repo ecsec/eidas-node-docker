@@ -4,6 +4,7 @@ on:
   push:
     tags:
     - 'v*.*.*-*'
+    - 'v*.*.*-prerelease-*'
 
 env:
   IMAGE_NAME: ecsec/eidas-node
@@ -35,19 +36,39 @@ jobs:
       # Determine Tag for Docker image
       - name: Determine Tag
         id: determine-tag
-        run: echo ::set-output name=TAG::$(echo $GITHUB_REF | cut -d / -f 3 | cut -c 2-)
+        run: |
+          echo ::set-output name=TAG::$(echo $GITHUB_REF | cut -d / -f 3 | cut -c 2-)
+          echo ::set-output name=EIDAS_NODE_VERSION::$(echo $GITHUB_REF | cut -d / -f 3 | cut -d - -f 1 | cut -c 2-)
 
       # Build and push Docker image with Buildx
       # https://github.com/docker/build-push-action
       - name: Build and push Docker image
         id: build-and-push
+        if : "! contains(steps.determine-tag.outputs.TAG, 'prerelease')"
         uses: docker/build-push-action@v2
         with:
           context: .
+          build-args: |
+            EIDAS_NODE_VERSION=${{ steps.determine-tag.outputs.EIDAS_NODE_VERSION }}
           tags: |
             ${{ env.IMAGE_NAME }}:${{ steps.determine-tag.outputs.TAG }}
             ${{ env.IMAGE_NAME }}:latest
-          # build on feature branches, push only on main branch
+          push: true
+
+      # Build and push Docker image with Buildx
+      # https://github.com/docker/build-push-action
+      - name: Build and push Docker prerelease image
+        id: build-and-push-prerelease
+        if : "contains(steps.determine-tag.outputs.TAG, 'prerelease')"
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          # We need a different eIDAS-Node URL when building an image with a prerelease version
+          build-args: |
+            EIDAS_NODE_VERSION=${{ steps.determine-tag.outputs.EIDAS_NODE_VERSION }}
+            EIDAS_NODE_URL=https://ec.europa.eu/cefdigital/artifact/repository/eid/eu/eIDAS-node-prerelease/${{ steps.determine-tag.outputs.EIDAS_NODE_VERSION }}/eIDAS-node-prerelease-${{ steps.determine-tag.outputs.EIDAS_NODE_VERSION }}.zip
+          tags: |
+            ${{ env.IMAGE_NAME }}:${{ steps.determine-tag.outputs.TAG }}
           push: true
 
   build-helm:
