@@ -67,7 +67,7 @@ $ helm upgrade --install ${RELEASE_NAME} -n ${NAMESPACE} --version ${VERSION} ec
 You can list all available eIDAS-Node helm charts by using the following command:
 
 ```bash
-$ helm search repo eidas-node --devel
+$ helm search repo eidas-node -l --devel
 ```
 
 For more details about the helm chart and its configuration, see [here](./helm/README.md).

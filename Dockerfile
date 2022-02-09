@@ -34,8 +34,8 @@ USER root
 
 # Copy default WAR to Wildfly Image
 COPY --from=builder --chown=jboss:root /data/WILDFLY/EidasNode.war /opt/jboss/wildfly/standalone/deployments/eidas-node.war
-# Copy BouncyCastle to Wildfly Modules
-COPY --from=builder --chown=jboss:root /data/AdditionalFiles/Wildfly15/ /opt/jboss/wildfly/modules/system/layers/base/
+# Copy additional files to tmp
+COPY --from=builder --chown=jboss:root /data/AdditionalFiles/ /tmp/AdditionalFiles/
 # Copy customized java security properties file to /etc/java/security
 COPY docker/java_bc.security /etc/java/security/java_bc.security
 
@@ -44,6 +44,10 @@ RUN mkdir -p /config/eidas/specificProxyService && \
     mkdir -p /work && \
     chown -R jboss:root /config && \
     chown -R jboss:root /work && \
+    # Copy wildfly latest additional files to WildFly Modules
+    LATEST_ADDITIONAL_FILES=$(ls /tmp/AdditionalFiles/ | tail -n 1) && \
+    cp -r /tmp/AdditionalFiles/${LATEST_ADDITIONAL_FILES}/* /opt/jboss/wildfly/modules/system/layers/base/ && \
+    rm -r /tmp/AdditionalFiles/ && \
     # See also https://apacheignite.readme.io/docs/getting-started#running-ignite-with-java-11-and-later-versions regarding add-exports
     printf '\nJAVA_OPTS=\"$JAVA_OPTS $JAVA_OPTS_CUSTOM -Djdk.tls.client.protocols=TLSv1.2 --add-exports=java.base/jdk.internal.misc=ALL-UNNAMED --add-exports=java.management/com.sun.jmx.mbeanserver=ALL-UNNAMED --add-exports=jdk.internal.jvmstat/sun.jvmstat.monitor=ALL-UNNAMED --add-exports=java.base/sun.reflect.generics.reflectiveObjects=ALL-UNNAMED --add-opens=jdk.management/com.sun.management.internal=ALL-UNNAMED --illegal-access=permit\"' \
       >> /opt/jboss/wildfly/bin/standalone.conf && \
