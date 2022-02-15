@@ -1,32 +1,6 @@
-ARG ALPINE_VERSION=3.15
 ARG WILDFLY_VERSION=25.0.0.Final
 
-
-FROM alpine:${ALPINE_VERSION} as builder
-
-
-RUN apk update && \
-    apk add --no-cache unzip curl openjdk17
-
-WORKDIR /data
-
-ARG EIDAS_NODE_VERSION=2.5.0
-ARG EIDAS_NODE_URL=https://ec.europa.eu/cefdigital/artifact/repository/eid/eu/eIDAS-node/${EIDAS_NODE_VERSION}/eIDAS-node-${EIDAS_NODE_VERSION}.zip
-
-# Download eIDAS-Node Software
-RUN curl ${EIDAS_NODE_URL} -o eIDAS-node-dl.zip
-
-# Prepare for adding updated jboss-deployment-structure.xml file to EidasNode.war
-# Because of Bug: https://issues.apache.org/jira/browse/IGNITE-12483
-# Solution: https://stackoverflow.com/questions/59407347/connection-from-ignite-client-in-docker-container-to-ignite-server-in-another-do
-COPY docker/jboss-deployment-structure.xml WEB-INF/jboss-deployment-structure.xml
-
-# Unzip eIDAS-Node Software
-RUN unzip eIDAS-node-dl.zip && \
-    unzip EIDAS-Binaries-Wildfly-*.zip && \
-    # Update the EidasNode.war by adding and overwriting jboss-deployment-structure.xml
-    jar -uvf WILDFLY/EidasNode.war WEB-INF/
-
+FROM eidas-node-base as builder
 
 FROM jboss/wildfly:${WILDFLY_VERSION} as runner
 
@@ -39,11 +13,8 @@ COPY --from=builder --chown=jboss:root /data/AdditionalFiles/ /tmp/AdditionalFil
 # Copy customized java security properties file to /etc/java/security
 COPY docker/java_bc.security /etc/java/security/java_bc.security
 
-RUN mkdir -p /config/eidas/specificProxyService && \
-    mkdir -p /config/keystore && \
-    mkdir -p /work && \
-    chown -R jboss:root /config && \
-    chown -R jboss:root /work && \
+RUN mkdir -p /config/ && chown -R jboss:root /config && \
+    mkdir -p /work && chown -R jboss:root /work && \
     # Copy wildfly latest additional files to WildFly Modules
     LATEST_ADDITIONAL_FILES=$(ls /tmp/AdditionalFiles/ | tail -n 1) && \
     cp -r /tmp/AdditionalFiles/${LATEST_ADDITIONAL_FILES}/* /opt/jboss/wildfly/modules/system/layers/base/ && \

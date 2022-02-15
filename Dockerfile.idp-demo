@@ -1,0 +1,33 @@
+ARG WILDFLY_VERSION=25.0.0.Final
+
+FROM eidas-node-base as builder
+
+FROM jboss/wildfly:${WILDFLY_VERSION} as runner
+
+USER root
+
+# Copy default WAR to Wildfly Image
+COPY --from=builder --chown=jboss:root /data/WILDFLY/IdP.war /opt/jboss/wildfly/standalone/deployments/idp-demo.war
+# Copy additional files to tmp
+COPY --from=builder --chown=jboss:root /data/AdditionalFiles/ /tmp/AdditionalFiles/
+# Copy customized java security properties file to /etc/java/security
+COPY docker/java_bc.security /etc/java/security/java_bc.security
+
+RUN mkdir -p /config/ && chown -R jboss:root /config && \
+    # Copy wildfly latest additional files to WildFly Modules
+    LATEST_ADDITIONAL_FILES=$(ls /tmp/AdditionalFiles/ | tail -n 1) && \
+    cp -r /tmp/AdditionalFiles/${LATEST_ADDITIONAL_FILES}/* /opt/jboss/wildfly/modules/system/layers/base/ && \
+    rm -r /tmp/AdditionalFiles/ && \
+    # See also https://apacheignite.readme.io/docs/getting-started#running-ignite-with-java-11-and-later-versions regarding add-exports
+    printf '\nJAVA_OPTS=\"$JAVA_OPTS $JAVA_OPTS_CUSTOM -Djdk.tls.client.protocols=TLSv1.2 --add-exports=java.base/jdk.internal.misc=ALL-UNNAMED --add-exports=java.management/com.sun.jmx.mbeanserver=ALL-UNNAMED --add-exports=jdk.internal.jvmstat/sun.jvmstat.monitor=ALL-UNNAMED --add-exports=java.base/sun.reflect.generics.reflectiveObjects=ALL-UNNAMED --add-opens=jdk.management/com.sun.management.internal=ALL-UNNAMED --illegal-access=permit\"' \
+      >> /opt/jboss/wildfly/bin/standalone.conf && \
+    # Provide Bouncycastle Module and overwrite security providers
+    printf '\nJAVA_OPTS=\"$JAVA_OPTS -Djava.security.properties=/etc/java/security/java_bc.security --module-path /opt/jboss/wildfly/modules/system/layers/base/org/bouncycastle/main/bcprov-jdk15on-1.64.jar --add-modules org.bouncycastle.provider\"\n' \
+      >> /opt/jboss/wildfly/bin/standalone.conf
+
+USER jboss
+
+ENV IDP_CONFIG_REPOSITORY=/config
+
+ENV JAVA_OPTS=""
+ENV JAVA_OPTS_CUSTOM="-Xmx512m"
