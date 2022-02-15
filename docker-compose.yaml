@@ -1,0 +1,35 @@
+
+version: '3.5'
+
+services:
+  eidas-node:
+    image: ecsec/eidas-node:latest
+    ports:
+      - "16080:8080"
+    volumes:
+      - "./.docker-config/config/:/config"
+      - "./.docker-config/keystore/:/keystore"
+    networks:
+      - eidas-network
+
+  idp-demo:
+    image: ecsec/idp-demo:latest
+    ports:
+      - "16081:8080"
+    volumes:
+      - "./.docker-config/config/idp:/config"
+    networks:
+      - eidas-network
+
+  specific-proxy-service:
+    image: ecsec/specific-proxy-service:latest
+    ports:
+      - "16082:8080"
+    volumes:
+      - ./.docker-config/config/specificProxyService:/config"
+    networks:
+      - eidas-network
+
+networks:
+  eidas-network:
+    name: eidas-network

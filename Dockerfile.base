@@ -12,7 +12,8 @@ ARG EIDAS_NODE_VERSION=2.5.0
 ARG EIDAS_NODE_URL=https://ec.europa.eu/cefdigital/artifact/repository/eid/eu/eIDAS-node/${EIDAS_NODE_VERSION}/eIDAS-node-${EIDAS_NODE_VERSION}.zip
 
 # Download eIDAS-Node Software
-ADD ${EIDAS_NODE_URL} eIDAS-node-dl.zip
+RUN curl ${EIDAS_NODE_URL} -o eIDAS-node-dl.zip
+# ADD ${EIDAS_NODE_URL} eIDAS-node-dl.zip
 
 # Prepare for adding updated jboss-deployment-structure.xml file to EidasNode.war
 # Because of Bug: https://issues.apache.org/jira/browse/IGNITE-12483

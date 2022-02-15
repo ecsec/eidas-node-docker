@@ -7,13 +7,13 @@ This repository provides a Dockerfile and Helm Chart of the EU eIDAS-Node Softwa
 
 ## Build
 
-By executing the following command the eIDAS-Node Image can be built.
+Before building the images 'eidas-node', 'idp-demo' and 'specific-proxy-service', the base image must be prepared. This can be done by executing the following command:
 
 ```bash
-$ docker build -t ecsec/eidas-node .
+$ docker build -t eidas-node-base -f Dockerfile.base .
 ```
 
-The following build arguments are supported (and can be used with `--build-arg`):
+The following build arguments are supported when building the base image (and can be used with `--build-arg`):
 
 | Build Argument | Description | Default |
 | -------------- | ----------- | ------- |
@@ -21,6 +21,22 @@ The following build arguments are supported (and can be used with `--build-arg`)
 | EIDAS_NODE_VERSION | Version of the eIDAS-Node software that will be used in the resulting image. | 2.5.0 |
 | WILDFLY_VERSION | Version of the WildFly Application Server that will be used in the resulting image. | 25.0.0.Final |
 | EIDAS_NODE_URL | Defines the entire URL that is pointing to the ZIP-Archive of the eIDAS-Node Software. | `https://ec.europa.eu/cefdigital/artifact/repository/eid/eu/eIDAS-node/${EIDAS_NODE_VERSION}/eIDAS-node-${EIDAS_NODE_VERSION}.zip` |
+
+Afterwards, the images 'eidas-node', 'idp-demo' and 'specific-proxy-service' can be built:
+
+```bash
+$ docker build -t ecsec/eidas-node -f Dockerfile.eidas-node .
+$ docker build -t ecsec/idp-demo -f Dockerfile.idp-demo .
+$ docker build -t ecsec/specific-proxy-service -f Dockerfile.specific-proxy-service .
+```
+
+Thereby, the following build arguments are supported:
+
+| Build Argument | Description | Default |
+| -------------- | ----------- | ------- |
+| WILDFLY_VERSION | Version of the WildFly Application Server that will be used in the resulting image. | 25.0.0.Final |
+
+For this entire procedure, a bash script `build.sh` is provided too.
 
 ## Configuration
 
