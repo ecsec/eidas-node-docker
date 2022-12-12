@@ -10,8 +10,8 @@ RUN apk update && \
 
 WORKDIR /data
 
-ARG EIDAS_NODE_VERSION=2.5.0
-ARG EIDAS_NODE_URL=https://ec.europa.eu/cefdigital/artifact/repository/eid/eu/eIDAS-node/${EIDAS_NODE_VERSION}/eIDAS-node-${EIDAS_NODE_VERSION}.zip
+ARG EIDAS_NODE_VERSION=2.6.0
+ARG EIDAS_NODE_URL=https://ec.europa.eu/digital-building-blocks/artifact/repository/eid/eu/eIDAS-node/${EIDAS_NODE_VERSION}/eIDAS-node-${EIDAS_NODE_VERSION}.zip
 
 # Download eIDAS-Node Software
 RUN curl ${EIDAS_NODE_URL} -o eIDAS-node-dl.zip
@@ -52,7 +52,7 @@ RUN mkdir -p /config/eidas/specificProxyService && \
     printf '\nJAVA_OPTS=\"$JAVA_OPTS $JAVA_OPTS_CUSTOM -Djdk.tls.client.protocols=TLSv1.2 --add-exports=java.base/jdk.internal.misc=ALL-UNNAMED --add-exports=java.management/com.sun.jmx.mbeanserver=ALL-UNNAMED --add-exports=jdk.internal.jvmstat/sun.jvmstat.monitor=ALL-UNNAMED --add-exports=java.base/sun.reflect.generics.reflectiveObjects=ALL-UNNAMED --add-opens=jdk.management/com.sun.management.internal=ALL-UNNAMED --illegal-access=permit\"' \
       >> /opt/jboss/wildfly/bin/standalone.conf && \
     # Provide Bouncycastle Module and overwrite security providers
-    printf '\nJAVA_OPTS=\"$JAVA_OPTS -Djava.security.properties=/etc/java/security/java_bc.security --module-path /opt/jboss/wildfly/modules/system/layers/base/org/bouncycastle/main/bcprov-jdk15on-1.64.jar --add-modules org.bouncycastle.provider\"\n' \
+    printf '\nJAVA_OPTS=\"$JAVA_OPTS -Djava.security.properties=/etc/java/security/java_bc.security --module-path /opt/jboss/wildfly/modules/system/layers/base/org/bouncycastle/main/bcprov-jdk15on-170.jar --add-modules org.bouncycastle.provider\"\n' \
       >> /opt/jboss/wildfly/bin/standalone.conf
 
 USER jboss
