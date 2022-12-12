@@ -95,6 +95,7 @@ jobs:
         id: package-helm
         run: |
           GITHUB_TAG=$(echo $GITHUB_REF | cut -d / -f 3 | cut -c 2-)
+          sed -i 's@version: "latest"@version: "'"$GITHUB_TAG"'"@' helm/Chart.yaml
           sed -i 's@appVersion: "latest"@appVersion: "'"$GITHUB_TAG"'"@' helm/Chart.yaml
           echo ::set-output name=TAG::$(echo $GITHUB_TAG)
 
