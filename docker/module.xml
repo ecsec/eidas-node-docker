@@ -1,0 +1,16 @@
+<module name="org.bouncycastle" xmlns="urn:jboss:module:1.9">
+    <resources>
+        <resource-root path="bcprov-jdk18on-1.80.jar" />
+    </resources>
+    <dependencies>
+        <module name="javax.api" />
+        <module name="org.jboss.logging" />
+        <module name="org.jboss.modules" />
+    </dependencies>
+    <provides>
+        <service name="java.security.Provider">
+            <with-class name="org.bouncycastle.jce.provider.BouncyCastleProvider"/>
+            <with-class name="org.bouncycastle.pqc.jcajce.provider.BouncyCastlePQCProvider" />
+        </service>
+    </provides>
+</module>
