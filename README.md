@@ -16,10 +16,10 @@ $ docker build -t ecsec/eidas-node .
 The following build arguments are supported (and can be used with `--build-arg`):
 
 | Build Argument | Description | Default |
-| -------------- | ----------- | ------- |
-| ALPINE_VERSION | Version of the Alpine Image that is used for downloading, extracting and preparing the eIDAS-Node software. | 3.15 |
-| EIDAS_NODE_VERSION | Version of the eIDAS-Node software that will be used in the resulting image. | 2.5.0 |
-| WILDFLY_VERSION | Version of the WildFly Application Server that will be used in the resulting image. | 25.0.0.Final |
+| -------------- | ----------- |---------|
+| ALPINE_VERSION | Version of the Alpine Image that is used for downloading, extracting and preparing the eIDAS-Node software. | 3.22 |
+| EIDAS_NODE_VERSION | Version of the eIDAS-Node software that will be used in the resulting image. | 3.0.0 |
+| WILDFLY_VERSION | Version of the WildFly Application Server that will be used in the resulting image. | 35.0.1.Final-jdk17 |
 | EIDAS_NODE_URL | Defines the entire URL that is pointing to the ZIP-Archive of the eIDAS-Node Software. | `https://ec.europa.eu/cefdigital/artifact/repository/eid/eu/eIDAS-node/${EIDAS_NODE_VERSION}/eIDAS-node-${EIDAS_NODE_VERSION}.zip` |
 
 ## Configuration
