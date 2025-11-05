@@ -1,5 +1,5 @@
-ARG ALPINE_VERSION=3.15
-ARG WILDFLY_VERSION=26.1.3.Final-jdk17
+ARG ALPINE_VERSION=3.22
+ARG WILDFLY_VERSION=35.0.1.Final-jdk17
 
 
 FROM alpine:${ALPINE_VERSION} as builder
@@ -10,7 +10,7 @@ RUN apk update && \
 
 WORKDIR /data
 
-ARG EIDAS_NODE_VERSION=2.9.0
+ARG EIDAS_NODE_VERSION=3.0.0
 ARG EIDAS_NODE_URL=https://ec.europa.eu/digital-building-blocks/artifact/repository/eid/eu/eIDAS-node/${EIDAS_NODE_VERSION}/eIDAS-node-${EIDAS_NODE_VERSION}.zip
 
 # Download eIDAS-Node Software
@@ -26,9 +26,9 @@ COPY docker/jboss-deployment-structure.xml WEB-INF/jboss-deployment-structure.xm
 
 # Unzip eIDAS-Node Software
 RUN unzip eIDAS-node-dl.zip && \
-    unzip EIDAS-Binaries-Wildfly-*.zip && \
+    unzip EIDAS-Binaries-*.zip && \
     # Update the EidasNodeConnector.war by adding and overwriting jboss-deployment-structure.xml
-    jar -uvf WILDFLY/EidasNodeConnector.war WEB-INF/
+    jar -uvf WARS/EidasNodeConnector.war WEB-INF/
 
 
 FROM quay.io/wildfly/wildfly:${WILDFLY_VERSION} as runner
@@ -36,7 +36,7 @@ FROM quay.io/wildfly/wildfly:${WILDFLY_VERSION} as runner
 USER root
 
 # Copy default WAR to Wildfly Image
-COPY --from=builder --chown=jboss:root /data/WILDFLY/EidasNodeConnector.war /opt/jboss/wildfly/standalone/deployments/eidas-node.war
+COPY --from=builder --chown=jboss:root /data/WARS/EidasNodeConnector.war /opt/jboss/wildfly/standalone/deployments/eidas-node.war
 # Copy additional files to tmp
 COPY --from=builder --chown=jboss:root /data/bcprov-jdk18on-1.80.jar /opt/jboss/wildfly/modules/system/layers/base/org/bouncycastle/main/bcprov-jdk18on-1.80.jar
 # Copy customized java security properties file to /etc/java/security
