@@ -45,7 +45,7 @@ jobs:
       - name: Build and push Docker image
         id: build-and-push
         if : "! contains(steps.determine-tag.outputs.TAG, 'prerelease')"
-        uses: docker/build-push-action@v4
+        uses: docker/build-push-action@v6
         with:
           context: .
           build-args: |
@@ -60,7 +60,7 @@ jobs:
       - name: Build and push Docker prerelease image
         id: build-and-push-prerelease
         if : "contains(steps.determine-tag.outputs.TAG, 'prerelease')"
-        uses: docker/build-push-action@v4
+        uses: docker/build-push-action@v6
         with:
           context: .
           # We need a different eIDAS-Node URL when building an image with a prerelease version
