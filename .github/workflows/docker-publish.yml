@@ -87,7 +87,7 @@ jobs:
       # Install Helm
       # https://github.com/Azure/setup-helm
       - name: Install Helm
-        uses: azure/setup-helm@v3.5
+        uses: azure/setup-helm@v4
         id: install
 
       # Package Helm Chart
