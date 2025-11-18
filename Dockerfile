@@ -46,7 +46,8 @@ COPY docker/module.xml /opt/jboss/wildfly/modules/system/layers/base/org/bouncyc
 
 RUN mkdir -p /config/eidas/specificProxyService && \
     mkdir -p /config/keystore && \
-    mkdir -p /work && \
+    mkdir -p /work/ignite/connector && \
+    mkdir -p /work/ignite/specificCommunication && \
     mkdir -p /logs/ && \
     chown -R jboss:root /config && \
     chown -R jboss:root /work && \
