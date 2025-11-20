@@ -1,6 +1,6 @@
 <module name="org.bouncycastle" xmlns="urn:jboss:module:1.9">
     <resources>
-        <resource-root path="bcprov-jdk18on-1.80.jar" />
+        <resource-root path="bcprov-jdk18on-1.82.jar" />
     </resources>
     <dependencies>
         <module name="javax.api" />
